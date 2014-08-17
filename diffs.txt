@@ -1,0 +1,60 @@
+---------------- cms/djangoapps/contentstore/views/__init__.py ----------------
+index 5e64446..e482d0e 100644
+@@ -18,6 +18,7 @@ from .export_git import *
+ from .user import *
+ from .tabs import *
+ from .transcripts_ajax import *
++from .videos import *
+ try:
+     from .dev import *
+ except ImportError:
+
+-------------------- cms/static/sass/elements/_header.scss --------------------
+index e6b0624..a3fa805 100644
+@@ -342,11 +342,13 @@ body.course.outline .nav-course-courseware .title,
+ body.course.updates .nav-course-courseware .title,
+ body.course.pages .nav-course-courseware .title,
+ body.course.uploads .nav-course-courseware .title,
++body.course.videos .nav-course-courseware .title,
+ 
+ body.course.outline .nav-course-courseware-outline,
+ body.course.updates .nav-course-courseware-updates,
+ body.course.pages .nav-course-courseware-pages,
+ body.course.uploads .nav-course-courseware-uploads,
++body.course.videos .nav-course-courseware-videos,
+ body.course.textbooks .nav-course-courseware-textbooks,
+ 
+ // course settings
+
+---------------------- cms/templates/widgets/header.html ----------------------
+index 32cf79b..130cbcb 100644
+@@ -21,6 +21,7 @@
+             course_team_url = reverse('contentstore.views.course_team_handler', kwargs={'course_key_string': unicode(course_key)})
+             assets_url = reverse('contentstore.views.assets_handler', kwargs={'course_key_string': unicode(course_key)})
+             textbooks_url = reverse('contentstore.views.textbooks_list_handler', kwargs={'course_key_string': unicode(course_key)})
++            videos_url = reverse('contentstore.views.videos_handler', kwargs={'course_key_string': unicode(course_key)})
+             import_url = reverse('contentstore.views.import_handler', kwargs={'course_key_string': unicode(course_key)})
+             course_info_url = reverse('contentstore.views.course_info_handler', kwargs={'course_key_string': unicode(course_key)})
+             export_url = reverse('contentstore.views.export_handler', kwargs={'course_key_string': unicode(course_key)})
+@@ -58,6 +59,9 @@
+                   <li class="nav-item nav-course-courseware-uploads">
+                     <a href="${assets_url}">${_("Files &amp; Uploads")}</a>
+                   </li>
++                  <li class="nav-item nav-course-courseware-videos">
++                    <a href="${videos_url}">${_("Videos")}</a>
++                  </li>
+                   <li class="nav-item nav-course-courseware-textbooks">
+                     <a href="${textbooks_url}">${_("Textbooks")}</a>
+                   </li>
+
+--------------------------------- cms/urls.py ---------------------------------
+index 8dba754..a30a8e3 100644
+@@ -79,6 +79,7 @@ urlpatterns += patterns(
+     url(r'^checklists/(?P<course_key_string>[^/]+)/(?P<checklist_index>\d+)?$', 'checklists_handler'),
+     url(r'^orphan/(?P<course_key_string>[^/]+)$', 'orphan_handler'),
+     url(r'^assets/(?P<course_key_string>[^/]+)/(?P<asset_key_string>.+)?$', 'assets_handler'),
++    url(r'^videos/(?P<course_key_string>[^/]+)/(?P<asset_key_string>.+)?$', 'videos_handler'),
+     url(r'^import/(?P<course_key_string>[^/]+)$', 'import_handler'),
+     url(r'^import_status/(?P<course_key_string>[^/]+)/(?P<filename>.+)$', 'import_status_handler'),
+     url(r'^export/(?P<course_key_string>[^/]+)$', 'export_handler'),
+
