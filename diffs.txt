@@ -1,0 +1,13 @@
+diff --git a/lms/urls.py b/lms/urls.py
+index 05df619..285c1d6 100644
+--- a/lms/urls.py
++++ b/lms/urls.py
+@@ -71,6 +71,8 @@ urlpatterns = ('',  # nopep8
+
+     # Feedback Form endpoint
+     url(r'^submit_feedback$', 'util.views.submit_feedback'),
++
++    url(r'^mobile_api/(?P<apiname>[^/]*)$', 'mobile_apis.views.mobile_api'),
+ )
+
+ # if settings.FEATURES.get("MULTIPLE_ENROLLMENT_ROLES"):
