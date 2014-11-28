@@ -1,6 +1,6 @@
 define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging", "js/views/video",
-    "js/views/paging_header", "js/views/paging_footer", "js/utils/modal"],
-    function($, _, gettext, VideoModel, PagingView, VideoView, PagingHeader, PagingFooter, ModalUtils) {
+    "js/views/paging_header", "js/views/paging_footer", "js/utils/modal", "js/views/utils/view_utils"],
+    function($, _, gettext, VideoModel, PagingView, VideoView, PagingHeader, PagingFooter, ModalUtils, ViewUtils) {
 
         var VideosView = PagingView.extend({
             // takes VideoCollection as model
@@ -18,6 +18,7 @@ define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging",
                 this.registerSortableColumn('js-video-name-col', gettext('Name'), 'display_name', 'asc');
                 this.registerSortableColumn('js-video-date-col', gettext('Date Added'), 'date_added', 'desc');
                 this.setInitialSortColumn('js-video-date-col');
+                ViewUtils.showLoadingIndicator();
                 this.setPage(0);
                 videosView = this;
             },
@@ -38,6 +39,8 @@ define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging",
             getTableBody: function() {
                 var tableBody = this.tableBody;
                 if (!tableBody) {
+                    ViewUtils.hideLoadingIndicator();
+
                     // Create the table
                     this.$el.html(this.template());
                     tableBody = this.$('#video-table-body');
@@ -74,6 +77,7 @@ define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging",
             },
 
             onError: function() {
+                ViewUtils.hideLoadingIndicator();
             },
 
             handleDestroy: function(model) {
@@ -118,13 +122,13 @@ define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging",
                 $('.upload-modal .file-chooser').fileupload({
                     dataType: 'json',
                     type: 'POST',
-                    maxChunkSize: 100 * 1000 * 1000,      // 100 MB
+                    maxChunkSize: 1024 * 1024 * 1024,      // 1 GB
                     autoUpload: true,
                     progressall: function(event, data) {
                         var percentComplete = parseInt((100 * data.loaded) / data.total, 10);
                         self.showUploadFeedback(event, percentComplete);
                     },
-                    maxFileSize: 100 * 1000 * 1000,   // 100 MB
+                    maxFileSize: 1024 * 1024 * 1024,   // 1 GB
                     maxNumberofFiles: 100,
                     add: function(event, data) {
                         data.process().done(function () {

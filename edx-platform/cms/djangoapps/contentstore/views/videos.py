@@ -145,6 +145,16 @@ def _get_videos_for_page(request, course_key, current_page, page_size, sort, asc
     return [sorted(video_files, lambda a, b: cmp(a[sort], b[sort]) if ascending else cmp(b[sort], a[sort]))[start : start + page_size], len(video_files)]
 
 
+def _write_video_file(upload_file, file_path, start = 0, end = 0, length = 0):
+     with open(file_path, "rb+" if start > 0 else "wb+") as fp:
+        if start > 0: fp.seek(start)
+        if upload_file.multiple_chunks():
+            for chunk in upload_file.chunks():
+                fp.write(chunk)
+        else:
+            fp.write(upload_file.read())
+
+
 @require_POST
 @ensure_csrf_cookie
 @login_required
@@ -177,12 +187,12 @@ def _upload_video(request, course_key):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
-    with open(file_path, "wb+") as fp:
-        if upload_file.multiple_chunks():
-            for chunk in upload_file.chunks():
-                fp.write(chunk)
-        else:
-            fp.write(upload_file.read())
+    if 'HTTP_CONTENT_RANGE' in request.META and request.META['HTTP_CONTENT_RANGE'].startswith('bytes '):
+        content_range, total_length = request.META['HTTP_CONTENT_RANGE'][6:].split('/')
+        content_start, content_end = content_range.split('-')
+        _write_video_file(upload_file, file_path, int(content_start), int(content_end), int(total_length))
+    else:
+        _write_video_file(upload_file, file_path)
 
     cache.delete('videos:' + course_key.to_deprecated_string())
 
