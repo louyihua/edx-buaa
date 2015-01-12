@@ -7,7 +7,7 @@ define(["backbone"], function(Backbone) {
       display_name: "",
       date_added: "",
       url: "",
-      external_url: "",
+      file_size: 0,
       portable_url: "",
     }
   });

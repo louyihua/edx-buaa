@@ -14,8 +14,8 @@
         <tr>
             <th class="name-col sortable-column"><span class="column-sort-link" id="js-video-name-col"><%= gettext("Name") %></span></th>
             <th class="date-col sortable-column"><span class="column-sort-link" id="js-video-date-col"><%= gettext("Date Added") %></span></th>
+            <th class="date-col sortable-column"><span class="column-sort-link" id="js-video-size-col"><%= gettext("File Size") %></span></th>
             <th class="embed-col"><%= gettext("Embed URL") %></th>
-            <th class="embed-col"><%= gettext("External URL") %></th>
             <th class="actions-col"><span class="sr"><%= gettext("Actions") %></span></th>
         </tr>
         </thead>
