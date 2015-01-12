@@ -14,7 +14,7 @@ var VideoView = BaseView.extend({
       display_name: this.model.get('display_name'),
       date_added: this.model.get('date_added'),
       url: this.model.get('url'),
-      external_url: this.model.get('external_url'),
+      file_size: this.model.get('file_size'),
       portable_url: this.model.get('portable_url'),
     }));
     return this;

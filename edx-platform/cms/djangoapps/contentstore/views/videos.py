@@ -135,9 +135,8 @@ def _get_videos_for_page(request, course_key, current_page, page_size, sort, asc
     if cache.get(cache_name) is None:
        for root, dirs, files in os.walk(VIDEO_PATH_BASE + VIDEO_URL_BASE + url_path):
            for name in files:
-               file_path = os.path.join(root, name)
-               date = datetime.utcfromtimestamp(os.stat(file_path).st_mtime)
-               video_files.append(_get_video_json(name, date, url_path + '/' + name))
+               st = os.stat(os.path.join(root, name))
+               video_files.append(_get_video_json(name, datetime.utcfromtimestamp(st.st_mtime), st.st_size, url_path + '/' + name))
        cache.set(cache_name, video_files)
     else:
        video_files = cache.get(cache_name)
@@ -196,8 +195,9 @@ def _upload_video(request, course_key):
 
     cache.delete('videos:' + course_key.to_deprecated_string())
 
+    st = os.stat(file_path)
     response_payload = {
-        'video': _get_video_json(upload_file.name, datetime.utcfromtimestamp(os.stat(file_path).st_mtime), content_loc),
+        'video': _get_video_json(upload_file.name, datetime.utcfromtimestamp(st.st_mtime), st.st_size, content_loc),
         'msg': _('Upload completed')
     }
 
@@ -239,7 +239,7 @@ def _update_video(request, course_key, video_key):
             return JsonResponse(modified_video, status=201)
 
 
-def _get_video_json(display_name, date, location):
+def _get_video_json(display_name, date, size, location):
     """
     Helper method for formatting the video information to send to client.
     """
@@ -249,7 +249,7 @@ def _get_video_json(display_name, date, location):
         'display_name': display_name,
         'date_added': get_default_time_display(date),
         'url': video_url,
-        'external_url': external_url,
+        'file_size': size,
         'portable_url': video_url,
         'id': unicode("/c4x" + _add_slash(location))
     }

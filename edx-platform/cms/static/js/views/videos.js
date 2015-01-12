@@ -17,6 +17,7 @@ define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging",
                 this.listenTo(collection, 'destroy', this.handleDestroy);
                 this.registerSortableColumn('js-video-name-col', gettext('Name'), 'display_name', 'asc');
                 this.registerSortableColumn('js-video-date-col', gettext('Date Added'), 'date_added', 'desc');
+                this.registerSortableColumn('js-video-size-col', gettext('File Size'), 'file_size', 'desc');
                 this.setInitialSortColumn('js-video-date-col');
                 this.setPage(0);
                 videosView = this;
@@ -118,13 +119,13 @@ define(["jquery", "underscore", "gettext", "js/models/video", "js/views/paging",
                 $('.upload-modal .file-chooser').fileupload({
                     dataType: 'json',
                     type: 'POST',
-                    maxChunkSize: 1024 * 1024 * 1024,      // 1 GB
+                    maxChunkSize: 100 * 1000 * 1000,      // 100 MB
                     autoUpload: true,
                     progressall: function(event, data) {
                         var percentComplete = parseInt((100 * data.loaded) / data.total, 10);
                         self.showUploadFeedback(event, percentComplete);
                     },
-                    maxFileSize: 1024 * 1024 * 1024,   // 1 GB
+                    maxFileSize: 1000 * 1000 * 1000,   // 1 GB
                     maxNumberofFiles: 100,
                     add: function(event, data) {
                         data.process().done(function () {
